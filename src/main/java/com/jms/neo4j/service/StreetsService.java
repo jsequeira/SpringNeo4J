@@ -2,10 +2,15 @@ package com.jms.neo4j.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
+import org.neo4j.kernel.impl.core.NodeProxy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import scala.collection.JavaConversions.MapWrapper;
+import scala.collection.JavaConversions.SeqWrapper;
 
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableList;
@@ -68,14 +73,38 @@ public class StreetsService {
 	
 	public List<Street> findShortestPath(String start, String end){
 		
+		
+		System.out.println(repository.findShortestPath(start, end));
+		Map<String, List<NodeProxy>> map = repository.findShortestPath(start, end);
+		
+		for(String key: map.keySet()){
+			System.out.println(key);
+			List<NodeProxy> stf =  map.get(key);
+			
+			for(NodeProxy obj : stf){
+				System.out.println(obj.getProperty("name"));
+			}
+		}
+		
+
 		return Lists.transform(
-				ImmutableList.<Street>builder().addAll(repository.findShortestPath(start, end)).build(), 
-					new Function<Street, Street>() {
-						public Street apply(Street s){
+				map.get("Street"), 
+					new Function<NodeProxy, Street>() {
+						public Street apply(NodeProxy s){
 							Street toReturn = new Street();
-							toReturn.setCity(s.getCity());
-							toReturn.setName(s.getName());
-							toReturn.setDetails(s.getDetails());
+							
+							toReturn.setId(s.getId());
+							
+							if(s.hasProperty("city")){
+								toReturn.setCity(s.getProperty("city").toString());
+							}
+							if(s.hasProperty("name")){
+								toReturn.setName(s.getProperty("name").toString());
+							}
+							if(s.hasProperty("details")){
+								toReturn.setDetails(s.getProperty("details").toString());
+							}
+							
 							return toReturn;
 						}
 					});

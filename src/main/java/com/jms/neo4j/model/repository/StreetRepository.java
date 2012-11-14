@@ -1,9 +1,10 @@
 package com.jms.neo4j.model.repository;
 
 import java.util.List;
+import java.util.Map;
 
+import org.neo4j.kernel.impl.core.NodeProxy;
 import org.springframework.data.neo4j.annotation.Query;
-import org.springframework.data.neo4j.core.EntityPath;
 import org.springframework.data.neo4j.repository.CypherDslRepository;
 import org.springframework.data.neo4j.repository.GraphRepository;
 import org.springframework.data.neo4j.repository.NamedIndexRepository;
@@ -22,6 +23,8 @@ CypherDslRepository<Street>
 	
 	@Query("START source=node:Street(name={0}), destination=node:Street(name={1})\n" +
 			"MATCH p = shortestPath(source-[*]->destination)\n" +
-			"RETURN extract(n in nodes(p) : n)")
-	List<Street> findShortestPath(String origin, String destination);
+			"RETURN nodes(p) as Street")
+	Map<String, List<NodeProxy>> findShortestPath(String origin, String destination);
+	
+	
 }
