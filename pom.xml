@@ -11,7 +11,6 @@
 		<java-version>1.6</java-version>
 		<org.springframework-version>3.2.0.RC1</org.springframework-version>
 		<org.aspectj-version>1.6.12</org.aspectj-version>
-		<neo4j.version>1.8.RC1</neo4j.version>
 		<org.slf4j-version>1.5.10</org.slf4j-version>
 		<spring-data-neo4j.version>2.1.0.RELEASE</spring-data-neo4j.version>
 	</properties>
@@ -25,7 +24,7 @@
 		<repository>
 			<id>MavenCentral</id>
 			<name>Maven repository</name>
-			<url>http://repo1.maven.org/maven2</url>
+			<url>http://repo2.maven.org/maven2</url>
 			<releases>
 				<enabled>true</enabled>
 			</releases>
@@ -82,8 +81,7 @@
 			<artifactId>spring-tx</artifactId>
 			<version>${org.springframework-version}</version>
 		</dependency>
-
-
+		
 		<dependency>
 			<groupId>org.codehaus.jackson</groupId>
 			<artifactId>jackson-core-asl</artifactId>
@@ -183,7 +181,6 @@
 		</dependency>
 
 		
-		
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-validator</artifactId>
@@ -236,7 +233,7 @@
 			<plugin>
 			    <groupId>org.codehaus.mojo</groupId>
 			    <artifactId>aspectj-maven-plugin</artifactId>
-			    <version>1.0</version>
+			    <version>1.4</version>
 			    <dependencies>
 			        <!-- NB: You must use Maven 2.0.9 or above or these are ignored (see MNG-2972) -->
 			        <dependency>
