@@ -26,5 +26,8 @@ CypherDslRepository<Street>
 			"RETURN nodes(p) as Street")
 	Map<String, List<NodeProxy>> findShortestPath(String origin, String destination);
 	
-	
+	@Query("START source=node:Street(name={0}, city={1}), destination=node:Street(name={2}, city={3})\n" +
+			"MATCH p = shortestPath(source-[*]->destination)\n" +
+			"RETURN nodes(p) as Street")
+	Map<String, List<NodeProxy>> findShortestPath(String originName, String originCity, String destinationName, String destinationCity);
 }

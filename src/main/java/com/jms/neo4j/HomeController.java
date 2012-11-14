@@ -10,12 +10,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.jms.neo4j.model.Street;
+import com.jms.neo4j.model.dto.FindPathDTO;
 import com.jms.neo4j.service.StreetsService;
 
 /**
@@ -58,11 +60,18 @@ public class HomeController {
 		
 		service.setDefaultData();
 		
-		service.testFind();
-		
-		
-		
 		return service.findShortestPath(start, end).toString();
+	}
+	
+	@RequestMapping(value = "/{start}/{end}", method = RequestMethod.POST)
+	public @ResponseBody List<Street> ShortestPath(@ModelAttribute FindPathDTO path) {
+		logger.info("Welcome home! the client locale is ");
+		
+		
+		service.setDefaultData();
+		
+		return service.findShortestPath(path.getStartStreetName(), path.getStartStreetCity(),
+				path.getEndStreetName(), path.getEndStreetCity());
 	}
 
 }

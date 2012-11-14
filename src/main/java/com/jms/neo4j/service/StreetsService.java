@@ -2,18 +2,13 @@ package com.jms.neo4j.service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.neo4j.kernel.impl.core.NodeProxy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import scala.collection.JavaConversions.MapWrapper;
-import scala.collection.JavaConversions.SeqWrapper;
-
 import com.google.common.base.Function;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.jms.neo4j.model.Street;
@@ -22,6 +17,31 @@ import com.jms.neo4j.model.repository.StreetRepository;
 @Service
 @Transactional
 public class StreetsService {
+
+	/**
+	 * class used to convert from a nodeproxy into a Street
+	 * @author Joao Sequeira
+	 *
+	 */
+	private final class NodeProxyToStreet implements
+			Function<NodeProxy, Street> {
+		public Street apply(NodeProxy s){
+			Street toReturn = new Street();
+			toReturn.setId(s.getId());
+			
+			if(s.hasProperty("city")){
+				toReturn.setCity(s.getProperty("city").toString());
+			}
+			if(s.hasProperty("name")){
+				toReturn.setName(s.getProperty("name").toString());
+			}
+			if(s.hasProperty("details")){
+				toReturn.setDetails(s.getProperty("details").toString());
+			}
+			
+			return toReturn;
+		}
+	}
 
 	@Autowired
 	StreetRepository repository;
@@ -71,44 +91,31 @@ public class StreetsService {
 		System.out.println(repository.findShortestPath("S1", "S4"));
 	}
 	
+	/**
+	 * Finds the shortest path given a street identified by name
+	 * @param start
+	 * @param end
+	 * @return
+	 */
 	public List<Street> findShortestPath(String start, String end){
-		
-		
-		System.out.println(repository.findShortestPath(start, end));
-		Map<String, List<NodeProxy>> map = repository.findShortestPath(start, end);
-		
-		for(String key: map.keySet()){
-			System.out.println(key);
-			List<NodeProxy> stf =  map.get(key);
-			
-			for(NodeProxy obj : stf){
-				System.out.println(obj.getProperty("name"));
-			}
-		}
-		
 
 		return Lists.transform(
-				map.get("Street"), 
-					new Function<NodeProxy, Street>() {
-						public Street apply(NodeProxy s){
-							Street toReturn = new Street();
-							
-							toReturn.setId(s.getId());
-							
-							if(s.hasProperty("city")){
-								toReturn.setCity(s.getProperty("city").toString());
-							}
-							if(s.hasProperty("name")){
-								toReturn.setName(s.getProperty("name").toString());
-							}
-							if(s.hasProperty("details")){
-								toReturn.setDetails(s.getProperty("details").toString());
-							}
-							
-							return toReturn;
-						}
-					});
-		
-	//	return ImmutableList.<Street>builder().add(repository.findShortestPath(start, end)).build();
+				repository.findShortestPath(start, end).get("Street"), 
+					new NodeProxyToStreet());
+	}
+	
+	/**
+	 * Finds the shortest path given a streed identified by name and city
+	 * @param startName
+	 * @param startCity
+	 * @param endName
+	 * @param endCity
+	 * @return
+	 */
+	public List<Street> findShortestPath(String startName, String startCity, String endName, String endCity){
+
+		return Lists.transform(
+				repository.findShortestPath(startName, startCity, endName, endCity).get("Street"), 
+					new NodeProxyToStreet());
 	}
 }
